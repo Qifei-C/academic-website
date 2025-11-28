@@ -175,7 +175,6 @@ function BookingSlot({ slot, onBooked }: BookingSlotProps) {
       }}
       dateLabel={format(startDate, "EEEE, MMM d")}
       timeLabel={label}
-      slot={slot}
       status={status}
       onConfirm={handleConfirm}
       trigger={
