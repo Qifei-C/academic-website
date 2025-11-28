@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## OAuth scope demo (calendar.events)
+
+The `/schedule` flow is a fully mocked demonstration of how we intend to use Google Calendar’s `calendar.events` scope:
+- Show availability (mocked).
+- Collect name/email and a timeslot.
+- Simulate creating a calendar event (no real API calls).
+- Redirect to `/schedule/success` with a mock event summary.
+
+This is suitable for OAuth scope verification recordings without exposing real credentials or hitting Google APIs.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
