@@ -179,7 +179,7 @@ function BookingSlot({ slot, onBooked }: BookingSlotProps) {
       onConfirm={handleConfirm}
       trigger={
         <SlotCard
-          slot={{ time: label, available: true }}
+          slotInfo={{ time: label, available: true }}
           disabled={status === "loading"}
         />
       }
