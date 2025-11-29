@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { InlineVisitorMap } from "@/components/visitor-map/InlineVisitorMap";
 
 const publications = [
   {
@@ -250,8 +251,8 @@ function Contact() {
         <h2 className="text-3xl font-semibold tracking-tight">Get in touch</h2>
         <p className="text-sm text-muted-foreground">One place to reach me for collaborations or questions.</p>
       </div>
-      <Card className="border-border/70 bg-card/70">
-        <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="grid gap-8 lg:grid-cols-[1fr,0.9fr] lg:items-start">
+        <div className="space-y-4">
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Primary email</div>
             <div className="text-lg font-semibold">you@example.com</div>
@@ -272,8 +273,16 @@ function Contact() {
               </Button>
             ))}
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/schedule">Schedule a meeting</Link>
+            </Button>
+          </div>
+        </div>
+        <div className="w-full max-w-[420px] justify-self-end self-start lg:mt-2">
+          <InlineVisitorMap />
+        </div>
+      </div>
     </section>
   );
 }
