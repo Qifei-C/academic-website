@@ -12,13 +12,13 @@ const VISITORS_URL = "/assets/data/visitors.json";
 
 const LIGHT_BASE = "#d5d9e0";
 const DARK_BASE = "#e5e7eb";
-const VISIT_END_LIGHT = "#111111";
-const VISIT_END_DARK = "#ff4d4d";
+const VISIT_END_LIGHT = "#111111"; // 亮模式：深黑
+const VISIT_END_DARK = "#ff4d4d";  // 暗模式：亮红
 
 const TARGET_DOTS_PER_ROW = 140;
 const REF_WIDTH = 1200;
 const RADIUS_BASE = 2;
-const LAT_MIN = -85;
+const LAT_MIN = -60; // 去掉南极，缩小纬度范围避免内容下沉
 const LAT_MAX = 85;
 const LON_MIN = -180;
 const LON_MAX = 180;
@@ -54,7 +54,11 @@ function project(lon: number, lat: number, width: number, height: number) {
 }
 
 function isDarkTheme() {
-  if (typeof document !== "undefined" && document.documentElement.classList.contains("dark")) return true;
+  if (typeof document !== "undefined") {
+    const html = document.documentElement.classList;
+    if (html.contains("dark")) return true;
+    if (html.contains("light")) return false;
+  }
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
@@ -65,16 +69,15 @@ export function InlineVisitorMap() {
   const dotsRef = useRef<DotPoint[]>([]);
   const radiusRef = useRef<number>(RADIUS_BASE);
 
-    const generateDots = (width: number, height: number) => {
-      const land = landRef.current;
-      if (!land) return { dots: [] as DotPoint[], radius: RADIUS_BASE };
+  const generateDots = (width: number, height: number) => {
+    const land = landRef.current;
+    if (!land) return { dots: [] as DotPoint[], radius: RADIUS_BASE };
     const spacingDeg = (360 / TARGET_DOTS_PER_ROW) * (REF_WIDTH / width);
     const radius = Math.max(RADIUS_BASE, width / 1200);
     const res: DotPoint[] = [];
     for (let lat = LAT_MAX; lat >= LAT_MIN; lat -= spacingDeg) {
       for (let lon = LON_MIN; lon <= LON_MAX; lon += spacingDeg) {
-        // 跳过极南区域
-        if (!d3.geoContains(land, [lon, lat]) || lat < -60) continue;
+        if (!d3.geoContains(land, [lon, lat])) continue;
         const { x, y } = project(lon, lat, width, height);
         res.push({ lon, lat, x, y, value: 0, color: isDarkTheme() ? DARK_BASE : LIGHT_BASE });
       }
@@ -99,6 +102,7 @@ export function InlineVisitorMap() {
       });
     });
     const maxVal = Math.max(...dotList.map((d) => d.value), 0);
+    // 亮模式：值越大越黑；暗模式：值越大越红
     const base = isDarkTheme() ? DARK_BASE : LIGHT_BASE;
     const end = isDarkTheme() ? VISIT_END_DARK : VISIT_END_LIGHT;
     dotList.forEach((d) => {
@@ -204,7 +208,7 @@ export function InlineVisitorMap() {
   }, []);
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+    <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 8" }}>
       <canvas ref={canvasRef} className="h-full w-full" />
     </div>
   );

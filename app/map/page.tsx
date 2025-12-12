@@ -25,7 +25,7 @@ const VISIT_END_DARK = "#ff4d4d";  // 暗色主题高值：红
 const TARGET_DOTS_PER_ROW = 140;
 const REF_WIDTH = 1200;
 const RADIUS_BASE = 2;
-const LAT_MIN = -85;
+const LAT_MIN = -60; // 去掉南极并让可见范围填满更多高度
 const LAT_MAX = 85;
 const LON_MIN = -180;
 const LON_MAX = 180;
@@ -63,8 +63,10 @@ function project(lon: number, lat: number, width: number, height: number) {
 }
 
 function isDarkTheme() {
-  if (typeof document !== "undefined" && document.documentElement.classList.contains("dark")) {
-    return true;
+  if (typeof document !== "undefined") {
+    const html = document.documentElement.classList;
+    if (html.contains("dark")) return true;
+    if (html.contains("light")) return false;
   }
   return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
@@ -109,6 +111,7 @@ export default function MapPage() {
       });
     });
     const maxVal = Math.max(...dotList.map((d) => d.value), 0);
+    // 亮模式：值越大越黑；暗模式：值越大越红
     const base = isDarkTheme() ? DARK_BASE : LIGHT_BASE;
     const end = isDarkTheme() ? VISIT_END_DARK : VISIT_END_LIGHT;
     dotList.forEach((d) => {

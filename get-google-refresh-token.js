@@ -3,6 +3,7 @@
  * get-google-refresh-token.js
  *
  * Usage:
+ *   (will auto-load .env.local/.env if present)
  *   GOOGLE_CLIENT_ID="xxx" \
  *   GOOGLE_CLIENT_SECRET="xxx" \
  *   GOOGLE_REDIRECT_URI="http://localhost:3000/api/oauth2callback" \
@@ -13,10 +14,57 @@
  * - refresh_token  ← YOU NEED THIS ONE
  */
 
+const fs = require("fs");
+const path = require("path");
 const { google } = require("googleapis");
 
 // 解析命令行参数里的授权码
 const authCode = process.argv[2];
+
+// 先尝试加载 .env.local 或 .env，便于复用现有配置
+function loadEnv() {
+  const files = [".env.local", ".env"];
+  for (const file of files) {
+    const full = path.resolve(process.cwd(), file);
+    if (!fs.existsSync(full)) continue;
+    const content = fs.readFileSync(full, "utf8");
+    content.split(/\r?\n/).forEach((line) => {
+      const match = line.match(/^\s*([^#=\s]+)\s*=\s*(.*)\s*$/);
+      if (!match) return;
+      const key = match[1];
+      let val = match[2];
+      if (val.startsWith('"') && val.endsWith('"')) {
+        val = val.slice(1, -1);
+      }
+      if (process.env[key] === undefined) {
+        process.env[key] = val;
+      }
+    });
+    break;
+  }
+}
+
+loadEnv();
+
+function writeRefreshToken(refreshToken) {
+  const envPath = path.resolve(process.cwd(), ".env.local");
+  const exists = fs.existsSync(envPath);
+  const content = exists ? fs.readFileSync(envPath, "utf8") : "";
+  const lines = content.split(/\r?\n/).filter((line) => line.length > 0);
+  let updated = false;
+  const nextLines = lines.map((line) => {
+    if (line.match(/^\s*GOOGLE_REFRESH_TOKEN\s*=/)) {
+      updated = true;
+      return `GOOGLE_REFRESH_TOKEN=${refreshToken}`;
+    }
+    return line;
+  });
+  if (!updated) {
+    nextLines.push(`GOOGLE_REFRESH_TOKEN=${refreshToken}`);
+  }
+  fs.writeFileSync(envPath, nextLines.join("\n"), "utf8");
+  console.log(`\n💾 Wrote GOOGLE_REFRESH_TOKEN to ${envPath}`);
+}
 
 if (!authCode) {
   console.error(`
@@ -78,7 +126,8 @@ async function main() {
     if (tokens.refresh_token) {
       console.log("\n✅ Your refresh_token is:\n");
       console.log(tokens.refresh_token);
-      console.log("\n💾 Save this refresh_token in your .env.local or Vercel env vars.");
+      writeRefreshToken(tokens.refresh_token);
+      console.log("\n💾 Saved to .env.local (GOOGLE_REFRESH_TOKEN). Remember to restart your dev server.");
     } else {
       console.log(`
 ⚠ No refresh_token returned.

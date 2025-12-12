@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FileText, Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { Github, GraduationCap, Linkedin, Mail, Twitter, Calendar } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ const researchTags = ["Alignment", "Evaluation", "Retrieval", "Pedagogy", "Syste
 
 const socialLinks = [
   { label: "GitHub", href: "https://github.com", icon: Github },
-  { label: "Google Scholar", href: "https://scholar.google.com", icon: FileText },
+  { label: "Scholar", href: "https://scholar.google.com", icon: GraduationCap },
   { label: "LinkedIn", href: "https://www.linkedin.com", icon: Linkedin },
   { label: "Twitter", href: "https://twitter.com", icon: Twitter },
 ];
@@ -128,7 +128,7 @@ function Hero() {
 
 function About() {
   return (
-    <section id="about" className="space-y-4">
+    <section id="about" className="space-y-4 scroll-mt-24">
       <div className="space-y-1">
         <Badge variant="outline">About / Research</Badge>
         <h2 className="text-3xl font-semibold tracking-tight">Research Overview</h2>
@@ -159,7 +159,7 @@ function About() {
 
 function Publications() {
   return (
-    <section id="publications" className="space-y-4">
+    <section id="publications" className="space-y-4 scroll-mt-24">
       <div className="space-y-1">
         <Badge variant="outline">Selected Publications</Badge>
         <h2 className="text-3xl font-semibold tracking-tight">Recent work</h2>
@@ -206,7 +206,7 @@ function Publications() {
 
 function Projects() {
   return (
-    <section id="projects" className="space-y-4">
+    <section id="projects" className="space-y-4 scroll-mt-24">
       <div className="space-y-1">
         <Badge variant="outline">Selected Projects</Badge>
         <h2 className="text-3xl font-semibold tracking-tight">Research & course work</h2>
@@ -223,7 +223,7 @@ function Projects() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-2 pb-4 text-sm">
+            <CardContent className="space-y-3 pb-4 text-sm">
               <CardDescription className="text-muted-foreground">{project.summary}</CardDescription>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag) => (
@@ -232,9 +232,11 @@ function Projects() {
                   </Badge>
                 ))}
               </div>
-              <Button asChild size="sm" variant="ghost" className="h-8 px-0 text-primary hover:text-primary">
-                <Link href={project.link}>View details</Link>
-              </Button>
+              <div className="flex justify-end">
+                <Button asChild size="sm" variant="ghost" className="h-8 px-2 text-primary hover:text-primary">
+                  <Link href={project.link}>View details</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -245,41 +247,43 @@ function Projects() {
 
 function Contact() {
   return (
-    <section id="contact" className="space-y-4">
-      <div className="space-y-1">
-        <Badge variant="outline">Contact</Badge>
-        <h2 className="text-3xl font-semibold tracking-tight">Get in touch</h2>
-        <p className="text-sm text-muted-foreground">One place to reach me for collaborations or questions.</p>
-      </div>
-      <div className="grid gap-8 lg:grid-cols-[1fr,0.9fr] lg:items-start">
+    <section id="contact" className="space-y-8 scroll-mt-24">
+      <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <div className="text-sm text-muted-foreground">Primary email</div>
-            <div className="text-lg font-semibold">you@example.com</div>
+          <div className="space-y-1">
+            <Badge variant="outline">Contact</Badge>
+            <h2 className="text-3xl font-semibold tracking-tight">Get in touch</h2>
+            <p className="text-sm text-muted-foreground">One place to reach me for collaborations or questions.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild>
-              <Link href="mailto:you@example.com">
-                <Mail className="mr-2 h-4 w-4" />
-                Email
-              </Link>
-            </Button>
-            {socialLinks.map((item) => (
-              <Button key={item.label} asChild variant="outline">
-                <Link href={item.href}>
-                  <item.icon className="mr-2 h-4 w-4" />
-                  {item.label}
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Button asChild>
+                <Link href="mailto:you@example.com">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email me
                 </Link>
               </Button>
-            ))}
-          </div>
-          <div>
-            <Button asChild size="sm" variant="outline">
-              <Link href="/schedule">Schedule a meeting</Link>
-            </Button>
+              <Button asChild variant="outline">
+                <Link href="/schedule">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Find a time
+                </Link>
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {socialLinks.map((item) => (
+                <Button key={item.label} asChild size="icon" variant="ghost" className="h-9 w-9">
+                  <Link href={item.href} aria-label={item.label}>
+                    <item.icon className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ))}
+            </div>
+            <div className="text-xs text-muted-foreground">you@example.com</div>
           </div>
         </div>
-        <div className="w-full max-w-[420px] justify-self-end self-start lg:mt-2">
+        <div className="w-full max-w-[420px] justify-self-end self-center">
+          <div className="mb-2 text-right text-xs text-muted-foreground">Visitors (approximate locations)</div>
           <InlineVisitorMap />
         </div>
       </div>

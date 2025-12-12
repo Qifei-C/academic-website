@@ -8,6 +8,11 @@ type BookBody = {
   start?: string; // ISO
   end?: string; // ISO
   token?: string;
+  type?: string;
+  topic?: string;
+  institution?: string;
+  mode?: string;
+  location?: string;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,9 +34,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { name, email, start, end, token } = body;
+  const { name, email, start, end, token, type, topic, institution, mode, location } = body;
 
-  if (!name || !email || !start || !end || !token) {
+  if (!name || !email || !start || !end) {
     return NextResponse.json({ ok: false, error: "Missing required fields" }, { status: 400 });
   }
   if (API_TOKEN && token !== API_TOKEN) {
@@ -68,14 +73,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Slot not available" }, { status: 409 });
     }
 
+    const extraLines: string[] = [];
+    if (topic) extraLines.push(`Notes: ${topic}`);
+    if (type) extraLines.push(`Type: ${type}`);
+    if (mode) extraLines.push(`Format: ${mode}`);
+    if (institution) extraLines.push(`Institution: ${institution}`);
+    if (location) extraLines.push(`Location: ${location}`);
+    const description = ["Scheduled via personal site.", ...extraLines].join("\n");
+
     const res = await calendar.events.insert({
       calendarId,
+      sendUpdates: "all",
       requestBody: {
         summary: `Meeting with ${name}`,
-        description: "Scheduled via personal site.",
+        description,
         start: { dateTime: startDate.toISOString() },
         end: { dateTime: endDate.toISOString() },
         attendees: [{ email }],
+        location: location || undefined,
       },
     });
 
